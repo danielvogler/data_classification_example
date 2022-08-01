@@ -6,6 +6,13 @@ __pycache__/
 # C extensions
 *.so
 
+#
+.DS_Store
+*.code-workspace
+*.pkl
+*.csv
+data/figures/*
+
 # Distribution / packaging
 .Python
 build/
