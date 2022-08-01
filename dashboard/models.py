@@ -9,6 +9,7 @@ from dataclassification.plotting import Plotting
 from dataclassification.utils import Utils
 from pathlib import Path
 import pickle
+from PIL import Image
 
 ### config
 config_file = PROJECT_ROOT + '/config/config.ini'
@@ -26,25 +27,13 @@ def app():
     sideb = st.sidebar
 
     st.subheader('Model performance')
-    df_data = utils.load_data_file()
-    df_data, df_diff = utils.data_preprocessing(df_data)
+    df_model_summary = pd.read_csv( Path( config.files_dir / 'df_model_summary.csv' ), index_col=0 )
+    df_cost_summary = pd.read_csv( Path( config.files_dir / 'df_cost_summary.csv' ), index_col=0 )
 
-    all_model_names = config.all_model_names
-    selected_models = sideb.multiselect(
-     'Model names',
-     all_model_names,
-     all_model_names)
-    df_summary = ana.all_models(df_data, selected_models)
-
-    st.dataframe(df_summary.sort_values(by=['accuracy_score'], ascending=False))
+    st.dataframe(df_model_summary.sort_values(by=['accuracy_score'], ascending=False))
 
     st.write('Correct predictions')
-    with open(Path( config.fig_dir / 'all_predictions_correct_error_hist.pkl')    , 'rb') as f:
-        fig = pickle.load( f )
-    st.pyplot(fig, use_container_width=True)
+    st.image( Image.open( Path(config.fig_dir / 'all_predictions_correct_error_hist.png') ) )
 
     st.write('Incorrect predictions')
-    with open(Path( config.fig_dir / 'all_predictions_incorrect_error_hist.pkl')    , 'rb') as f:
-        fig = pickle.load( f )
-    st.pyplot(fig, use_container_width=True)
-
+    st.image( Image.open(Path(config.fig_dir / 'all_predictions_incorrect_error_hist.png') ) )

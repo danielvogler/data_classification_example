@@ -10,6 +10,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import cross_val_score
 from sklearn import svm
 import numpy as np
+from pathlib import Path
 
 class Analytics:
 
@@ -34,9 +35,9 @@ class Analytics:
         """
         logging.info(f'Modeling: {all_model_names}')
 
-        df_summary = pd.DataFrame(columns=['model_name','MAE','MAPE','r2','accuracy_score','cv_score'], index=all_model_names)
-        df_summary.set_index('model_name', inplace = True)
-        df_summary = df_summary.dropna()
+        df_model_summary = pd.DataFrame(columns=['model_name','MAE','MAPE','r2','accuracy_score','cv_score'], index=all_model_names)
+        df_model_summary.set_index('model_name', inplace = True)
+        df_model_summary = df_model_summary.dropna()
 
         X_train, X_test, y_train, y_test, scaler = Utils(self.config).model_preprocessing(df_data)
 
@@ -47,9 +48,15 @@ class Analytics:
                                                             y_test,
                                                             m)
 
-            df_summary.loc[m] = pd.Series({'MAE':MAE, 'MAPE':MAPE, 'r2':r2, 'accuracy_score':accuracy_score, 'cv_score':cv_score})
+            df_model_summary.loc[m] = pd.Series({'MAE':MAE, 'MAPE':MAPE, 'r2':r2, 'accuracy_score':accuracy_score, 'cv_score':cv_score})
 
-        return df_summary
+        df_cost_summary = self.all_cost_analyses(all_model_names)
+        Plotting(self.config).all_categorization_error_hist( self.config.all_model_names)
+
+        df_model_summary.to_csv( Path( self.config.files_dir / 'df_model_summary.csv' ) )
+        df_cost_summary.to_csv( Path( self.config.files_dir / 'df_cost_summary.csv' ) )
+
+        return df_model_summary, df_cost_summary
 
 
     def model_data(
@@ -126,13 +133,18 @@ class Analytics:
         all_model_names: List
         ) -> pd.DataFrame:
 
-        df_cost_summary = pd.DataFrame(columns=['model_name','weekly_reimbursements_sum'], index=all_model_names)
+        purchasing_cost = self.config.packages * self.config.buy_cost
+
+        df_cost_summary = pd.DataFrame(columns=['model_name','reimbursements_sum'], index=all_model_names)
         df_cost_summary.set_index('model_name', inplace = True)
         df_cost_summary = df_cost_summary.dropna()
 
         for m in all_model_names:
-            weekly_reimbursement_sum = self.cost_analysis( m )
-            df_cost_summary.loc[m] = pd.Series({'weekly_reimbursements_sum': weekly_reimbursement_sum})
+            reimbursement_sum = self.cost_analysis( m )
+            df_cost_summary.loc[m] = pd.Series({'reimbursements_sum': reimbursement_sum})
+
+        df_cost_summary['sorting_cost'] = self.config.sorting_cost
+        df_cost_summary['savings'] = df_cost_summary['sorting_cost'] - df_cost_summary['reimbursements_sum']
 
         return df_cost_summary
 
@@ -142,15 +154,14 @@ class Analytics:
         model_name: str
         ) -> float:
 
-        weekly_purchasing_cost = self.config.weekly_packages * self.config.buy_cost
         df_comparison = Utils(self.config).load_prediction_and_target_values(model_name)
 
         df_incorrect = df_comparison[ (df_comparison['y_test'] != df_comparison['prediction']) ].copy(deep=True)
         df_incorrect['to_reimburse'] = df_incorrect['prediction'].replace( self.config.sell_dict )
 
         test_reimbursement_sum = df_incorrect['to_reimburse'].sum()
-        weekly_reimbursement_sum = round( test_reimbursement_sum * self.config.weekly_packages / df_comparison.shape[0], 2)
+        reimbursement_sum = round( test_reimbursement_sum * self.config.packages / df_comparison.shape[0], 2)
 
-        logging.info(f'Model ({model_name}) weekly reimbursements: {weekly_reimbursement_sum}')
+        logging.info(f'Model ({model_name}) reimbursements: {reimbursement_sum}')
 
-        return weekly_reimbursement_sum
+        return reimbursement_sum
