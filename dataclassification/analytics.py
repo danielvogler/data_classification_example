@@ -3,9 +3,10 @@ from typing import Dict, Tuple, List
 import pandas as pd
 from dataclassification.utils import Utils
 from dataclassification.plotting import Plotting
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import cross_val_score
 from sklearn import svm
 import numpy as np
@@ -88,10 +89,21 @@ class Analytics:
             logging.info(f' -- log. Reg. modeling --')
             model = LogisticRegression()
 
+        elif model_name == 'AdaBoost':
+            logging.info(f' -- AdaBoost. modeling --')
+            model = AdaBoostClassifier()
+
+        elif model_name == 'KNN':
+            logging.info(f' -- KNN modeling --')
+            model = KNeighborsClassifier(n_neighbors=3)
+
         else:
             logging.raiseExceptions
 
         model.fit(X_train, y_train)
+
+        Utils(self.config).save_feature_importance(model,
+                                    model_name)
 
         prediction = model.predict(X_test)
 

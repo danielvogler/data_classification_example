@@ -213,6 +213,35 @@ class Utils:
         return MAE, MAPE, r2, acc_score
 
 
+    def save_feature_importance(
+        self,
+        model,
+        model_name
+        ) -> None:
+        """ Save feature importance
+
+        Args:
+            model (_type_): model
+            model_name (_type_): model name to use for storing
+            X_train (_type_): X_train for col names
+        """
+        file_name = f'{model_name}_feature_importance.csv'
+        logging.info(f'Save feature importance for {model_name}: {file_name}')
+
+        if model_name == 'logReg':
+            df_feature_importance = [model.coef_]
+
+        elif model_name in ['DT','RF','AdaBoost']:
+            df_feature_importance = pd.DataFrame( [model.feature_importances_] )
+            df_feature_importance.to_csv( Path(self.config.files_dir, file_name) )
+
+        else:
+            pass
+
+        return
+
+
+
     def save_prediction_and_target_values(
         self,
         model_name: str,
