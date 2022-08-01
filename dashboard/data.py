@@ -33,7 +33,17 @@ def app():
     ###
     st.subheader('Original data')
     st.dataframe(df_data)
+
+    st.write('Data description')
+    st.dataframe(df_data.describe())
+
+    st.write('Pairplot')
     with open(Path( config.fig_dir / 'feature_pairplot.pkl')    , 'rb') as f:
+        fig = pickle.load( f )
+    st.pyplot(fig, use_container_width=True)
+
+    st.write('Heatmap')
+    with open(Path( config.fig_dir / 'feature_heatmap.pkl')    , 'rb') as f:
         fig = pickle.load( f )
     st.pyplot(fig, use_container_width=True)
 

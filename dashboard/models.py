@@ -35,6 +35,6 @@ def app():
      all_model_names)
     df_summary = ana.all_models(df_data, selected_models)
 
-    st.dataframe(df_summary[['accuracy_score']])
+    st.dataframe(df_summary.sort_values(by=['accuracy_score'], ascending=False))
 
 

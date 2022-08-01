@@ -25,7 +25,10 @@ def app():
     st.cache
 
     sideb = st.sidebar
-
+    st.subheader('Cost evaluation')
+    all_model_names = config.all_model_names
+    df_cost_sum = ana.all_cost_analyses(all_model_names)
+    st.dataframe(df_cost_sum)
 
 
 
