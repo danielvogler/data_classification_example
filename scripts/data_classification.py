@@ -30,8 +30,7 @@ df_data, df_diff = utils.data_preprocessing(df_data)
 # fig = plts.data_heatmap(df_data)
 
 all_model_names = config.all_model_names
-df_summary = ana.all_models(df_data, all_model_names)
-df_cost_sum = ana.all_cost_analyses(all_model_names)
+df_model_summary, df_cost_summary = ana.all_models(df_data, all_model_names)
 
-print(df_summary)
-print(df_cost_sum)
+logging.info(f'Model summary:\n{df_model_summary}')
+logging.info(f'Cost summary:\n{df_cost_summary}')
