@@ -53,8 +53,12 @@ class _Config:
 
         ### data
         self.col_cat = config.get('data', 'col_cat')
+        if ',' in self.col_cat:
+            self.col_cat = self.col_cat.split(',')
         self.col_target = config.get('data', 'col_target')
-        self.col_drop = config.get('data', 'col_drop').split(',')
+        self.col_drop = config.get('data', 'col_drop')
+        if ',' in self.col_drop:
+            self.col_drop = self.col_drop.split(',')
 
         ### model
         self.test_size = float( config.get('model', 'test_size') )

@@ -93,7 +93,11 @@ class Utils:
                    how='left', indicator=True)
         df_diff = df_diff[df_diff['_merge']=='left_only']
 
-        df_new = df_new.drop(columns=self.config.col_drop)
+        if any(self.config.col_drop) > 0:
+            logging.info(f'Dropping cols: {self.config.col_drop}')
+            df_new = df_new.drop(columns=self.config.col_drop)
+        else:
+            logging.info(f'No cols dropped')
 
         logging.info(f'Resulting DF size: {df_new.shape}')
 
