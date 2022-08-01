@@ -69,8 +69,8 @@ class _Config:
         self.sell_prices = [float(x) for x in config.get('cost', 'sell_prices').split(',')]
         self.sell_categories = config.get('cost', 'sell_categories').split(',')
         self.sell_dict = {self.sell_categories[i]: self.sell_prices[i] for i in range(len(self.sell_prices))}
-        self.weekly_packages = float( config.get('cost', 'weekly_packages') )
-        self.weekly_sorting_cost = float( config.get('cost', 'weekly_sorting_cost') )
+        self.packages = float( config.get('cost', 'packages') )
+        self.sorting_cost = float( config.get('cost', 'sorting_cost') )
 
         ### plotting
         self.font_axis = config.get('plotting', 'font_axis')
