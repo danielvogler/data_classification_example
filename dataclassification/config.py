@@ -51,6 +51,11 @@ class _Config:
         ### FILES
         self.data_file = Path(self.files_dir / config.get('files', 'data_file') )
 
+        ### data
+        self.col_cat = config.get('data', 'col_cat')
+        self.col_target = config.get('data', 'col_target')
+        self.col_drop = config.get('data', 'col_drop').split(',')
+
         ### plotting
         self.font_axis = config.get('plotting', 'font_axis')
         self.font_ticks = config.get('plotting', 'font_ticks')
