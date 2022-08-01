@@ -6,6 +6,7 @@ from dataclassification.plotting import Plotting
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import cross_val_score
 from sklearn import svm
 import numpy as np
 
@@ -32,19 +33,20 @@ class Analytics:
         """
         logging.info(f'Modeling: {all_model_names}')
 
-        df_summary = pd.DataFrame(columns=['model_name','MAE','MAPE','r2','accuracy_score'], index=all_model_names)
+        df_summary = pd.DataFrame(columns=['model_name','MAE','MAPE','r2','accuracy_score','cv_score'], index=all_model_names)
         df_summary.set_index('model_name', inplace = True)
         df_summary = df_summary.dropna()
 
         X_train, X_test, y_train, y_test, scaler = Utils(self.config).model_preprocessing(df_data)
 
         for m in all_model_names:
-            MAE, MAPE, r2, accuracy_score = self.model_data(X_train,
+            MAE, MAPE, r2, accuracy_score, cv_score = self.model_data(X_train,
                                                             X_test,
                                                             y_train,
                                                             y_test,
                                                             m)
-            df_summary.loc[m] = pd.Series({'MAE':MAE, 'MAPE':MAPE, 'r2':r2, 'accuracy_score':accuracy_score})
+
+            df_summary.loc[m] = pd.Series({'MAE':MAE, 'MAPE':MAPE, 'r2':r2, 'accuracy_score':accuracy_score, 'cv_score':cv_score})
 
         return df_summary
 
@@ -95,6 +97,8 @@ class Analytics:
 
         MAE, MAPE, r2, accuracy_score = Utils.prediction_error(prediction, y_test)
 
+        cv_score = cross_val_score(estimator = model, X = X_train, y = y_train.ravel(), cv = 10).mean()
+
         # ### categorize
         # y_test_cat = np.vectorize(category_dict.get)(y_test)
         # prediction_cat = np.vectorize(category_dict.get)(prediction)
@@ -102,7 +106,7 @@ class Analytics:
         Plotting(self.config).categorization_error_hist(model_name, y_test, prediction)
         Utils(self.config).save_prediction_and_target_values(model_name, y_test, prediction)
 
-        return MAE, MAPE, r2, accuracy_score
+        return MAE, MAPE, r2, accuracy_score, cv_score
 
 
     def all_cost_analyses(
