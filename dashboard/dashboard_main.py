@@ -22,7 +22,7 @@ plts = Plotting(config)
 utils = Utils(config)
 
 
-st.title('Flour')
+st.title('Data classification')
 
 #app.py
 import data

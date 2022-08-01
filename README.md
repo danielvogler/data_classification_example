@@ -1,6 +1,19 @@
 # data_classification_example
 Exemplary data classification
 
+## How-to
+- Store data and respective config settings in config file in `repo/config/`
+
+- Run example script:
+  ```bash
+  python scripts/data_classification.py
+  ```
+
+- Run dashboard
+  ```bash
+  streamlit run ./dashboard/dashboard_main.py
+  ```
+
 ## Setup
 
 ### Python environment
