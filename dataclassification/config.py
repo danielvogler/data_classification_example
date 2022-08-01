@@ -60,6 +60,14 @@ class _Config:
         self.test_size = float( config.get('model', 'test_size') )
         self.all_model_names = config.get('model', 'all_model_names').split(',')
 
+        ### cost
+        self.buy_cost = float( config.get('cost', 'buy_cost') )
+        self.sell_prices = [float(x) for x in config.get('cost', 'sell_prices').split(',')]
+        self.sell_categories = config.get('cost', 'sell_categories').split(',')
+        self.sell_dict = {self.sell_categories[i]: self.sell_prices[i] for i in range(len(self.sell_prices))}
+        self.weekly_packages = float( config.get('cost', 'weekly_packages') )
+        self.weekly_sorting_cost = float( config.get('cost', 'weekly_sorting_cost') )
+
         ### plotting
         self.font_axis = config.get('plotting', 'font_axis')
         self.font_ticks = config.get('plotting', 'font_ticks')
