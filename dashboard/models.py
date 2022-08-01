@@ -7,7 +7,8 @@ from dataclassification.config import config
 from dataclassification.settings import PROJECT_ROOT
 from dataclassification.plotting import Plotting
 from dataclassification.utils import Utils
-
+from pathlib import Path
+import pickle
 
 ### config
 config_file = PROJECT_ROOT + '/config/config.ini'
@@ -37,4 +38,13 @@ def app():
 
     st.dataframe(df_summary.sort_values(by=['accuracy_score'], ascending=False))
 
+    st.write('Correct predictions')
+    with open(Path( config.fig_dir / 'all_predictions_correct_error_hist.pkl')    , 'rb') as f:
+        fig = pickle.load( f )
+    st.pyplot(fig, use_container_width=True)
+
+    st.write('Incorrect predictions')
+    with open(Path( config.fig_dir / 'all_predictions_incorrect_error_hist.pkl')    , 'rb') as f:
+        fig = pickle.load( f )
+    st.pyplot(fig, use_container_width=True)
 
