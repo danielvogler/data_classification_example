@@ -103,3 +103,38 @@ class Analytics:
         Utils(self.config).save_prediction_and_target_values(model_name, y_test, prediction)
 
         return MAE, MAPE, r2, accuracy_score
+
+
+    def all_cost_analyses(
+        self,
+        all_model_names: List
+        ) -> pd.DataFrame:
+
+        df_cost_summary = pd.DataFrame(columns=['model_name','weekly_reimbursements_sum'], index=all_model_names)
+        df_cost_summary.set_index('model_name', inplace = True)
+        df_cost_summary = df_cost_summary.dropna()
+
+        for m in all_model_names:
+            weekly_reimbursement_sum = self.cost_analysis( m )
+            df_cost_summary.loc[m] = pd.Series({'weekly_reimbursements_sum': weekly_reimbursement_sum})
+
+        return df_cost_summary
+
+
+    def cost_analysis(
+        self,
+        model_name: str
+        ) -> float:
+
+        weekly_purchasing_cost = self.config.weekly_packages * self.config.buy_cost
+        df_comparison = Utils(self.config).load_prediction_and_target_values(model_name)
+
+        df_incorrect = df_comparison[ (df_comparison['y_test'] != df_comparison['prediction']) ].copy(deep=True)
+        df_incorrect['to_reimburse'] = df_incorrect['prediction'].replace( self.config.sell_dict )
+
+        test_reimbursement_sum = df_incorrect['to_reimburse'].sum()
+        weekly_reimbursement_sum = round( test_reimbursement_sum * self.config.weekly_packages / df_comparison.shape[0], 2)
+
+        logging.info(f'Model ({model_name}) weekly reimbursements: {weekly_reimbursement_sum}')
+
+        return weekly_reimbursement_sum
