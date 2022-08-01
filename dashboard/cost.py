@@ -7,7 +7,7 @@ from dataclassification.config import config
 from dataclassification.settings import PROJECT_ROOT
 from dataclassification.plotting import Plotting
 from dataclassification.utils import Utils
-
+from pathlib import Path
 
 ### config
 config_file = PROJECT_ROOT + '/config/config.ini'
@@ -21,14 +21,11 @@ plts = Plotting(config)
 utils = Utils(config)
 
 def app():
-
-    st.cache
-
     sideb = st.sidebar
+
     st.subheader('Cost evaluation')
-    all_model_names = config.all_model_names
-    df_cost_sum = ana.all_cost_analyses(all_model_names)
-    st.dataframe(df_cost_sum)
+    df_cost_summary = pd.read_csv( Path( config.files_dir / 'df_cost_summary.csv' ), index_col=0 )
+    st.dataframe(df_cost_summary.sort_values(by=df_cost_summary.columns[0], ascending=True))
 
 
 

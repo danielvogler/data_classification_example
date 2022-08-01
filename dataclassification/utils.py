@@ -75,7 +75,7 @@ class Utils:
         self,
         df: pd.DataFrame
         ) -> Tuple[pd.DataFrame, pd.DataFrame]:
-        """_summary_
+        """ preprocess data
 
         Args:
             df (pd.DataFrame): DF in

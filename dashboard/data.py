@@ -38,12 +38,12 @@ def app():
     st.dataframe(df_data.describe())
 
     st.write('Pairplot')
-    with open(Path( config.fig_dir / 'feature_pairplot.pkl')    , 'rb') as f:
+    with open(Path( config.fig_dir / 'feature_pairplot.pkl') , 'rb') as f:
         fig = pickle.load( f )
     st.pyplot(fig, use_container_width=True)
 
     st.write('Heatmap')
-    with open(Path( config.fig_dir / 'feature_heatmap.pkl')    , 'rb') as f:
+    with open(Path( config.fig_dir / 'feature_heatmap.pkl') , 'rb') as f:
         fig = pickle.load( f )
     st.pyplot(fig, use_container_width=True)
 
