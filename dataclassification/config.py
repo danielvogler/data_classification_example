@@ -56,6 +56,10 @@ class _Config:
         self.col_target = config.get('data', 'col_target')
         self.col_drop = config.get('data', 'col_drop').split(',')
 
+        ### model
+        self.test_size = float( config.get('model', 'test_size') )
+        self.all_model_names = config.get('model', 'all_model_names').split(',')
+
         ### plotting
         self.font_axis = config.get('plotting', 'font_axis')
         self.font_ticks = config.get('plotting', 'font_ticks')

@@ -44,3 +44,28 @@ class Plotting:
             pickle.dump(fig, f)
 
         return fig
+
+
+    def categorization_error_hist(
+        self,
+        model_name: str,
+        y_test,
+        prediction
+        ) -> None:
+
+        prediction_comparison = (y_test==prediction)
+
+        prediction_correct = y_test[prediction_comparison]
+        prediction_incorrect = y_test[~prediction_comparison]
+
+        plt.figure(figsize=(20, 15))
+        plt.hist([prediction_correct, prediction_incorrect], label=['True', 'False'])
+        plt.title('Predictions correct', fontsize=self.config.font_axis)
+        plt.ylabel('Frequency [-]', fontsize=self.config.font_axis)
+        plt.xlabel('Category [-]', fontsize=self.config.font_axis)
+        plt.xticks(fontsize=self.config.font_ticks)
+        plt.yticks(fontsize=self.config.font_ticks)
+        plt.legend(loc='upper right', fontsize=self.config.font_axis)
+        plt.savefig( Path(self.config.fig_dir / f'{model_name}_predictions_error_hist.png'), bbox_inches='tight' )
+
+        return

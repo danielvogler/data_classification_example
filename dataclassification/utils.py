@@ -100,6 +100,30 @@ class Utils:
         return df_new, df_diff
 
 
+    def model_preprocessing(
+        self,
+        df: pd.DataFrame
+        ) -> Tuple:
+        """ Preprocess model
+
+        Args:
+            df (pd.DataFrame): data
+
+        Returns:
+            Tuple: Data for split train/test and feature/target
+        """
+        logging.info('Model preprocessing')
+
+        X_train, X_test = train_test_split(df, test_size=self.config.test_size, shuffle=True)
+
+        X_train, y_train = self.split_feature_target(X_train, self.config.col_target)
+        X_test, y_test = self.split_feature_target(X_test, self.config.col_target)
+
+        scaler, X_train, X_test = self.scale_X(X_train, X_test)
+
+        return X_train, X_test, y_train, y_test, scaler
+
+
     @staticmethod
     def scale_X(
         X_train,
@@ -144,3 +168,84 @@ class Utils:
 
         return X, y
 
+
+    @staticmethod
+    def prediction_error(
+        prediction,
+        y_test) -> Tuple:
+        """ Compute a few prediction errors
+
+        Args:
+            prediction (_type_): target prediction
+            y_test (_type_): target values
+
+        Returns:
+            Tuple: error metrics
+        """
+        logging.info('Error calculation:')
+
+        if isinstance(y_test[0], (int, float, np.int8, np.int32, np.int64)):
+            logging.info('Numeric target')
+            MAE = round( mean_absolute_error(y_test , prediction), 3)
+            MAPE = round( mean_absolute_percentage_error(y_test , prediction), 3)
+            r2 = round( r2_score(y_test, prediction), 3)
+
+        elif isinstance(y_test[0], str):
+            logging.info('Categorical target')
+            MAE = None
+            MAPE = None
+            r2 = None
+
+        else:
+            raise Exception('Incorrect file type')
+
+        acc_score = round( accuracy_score(y_test, prediction), 3)
+
+        logging.info(f'MAE: {MAE}')
+        logging.info(f'MAPE: {MAPE}')
+        logging.info(f'R2: {r2}')
+        logging.info(f'accuracy_score: {acc_score}')
+
+        return MAE, MAPE, r2, acc_score
+
+
+    def save_prediction_and_target_values(
+        self,
+        model_name: str,
+        y_test,
+        prediction
+        ) -> None:
+        """ Save mapping of y_test -> prediction
+
+        Args:
+            model_name (str): model name
+            y_test (_type_): target values for testing
+            prediction (_type_): predicted target values
+        """
+        file_name = f'{model_name}_ytest_prediction_comparison.csv'
+        logging.info(f'Save ytest/prediction comparison to: {file_name}')
+
+        df = pd.DataFrame({"y_test" : y_test, "prediction" : prediction})
+        df.to_csv( Path(self.config.files_dir / f'{file_name}'), index=False)
+
+        return
+
+
+    def load_prediction_and_target_values(
+        self,
+        model_name: str
+        ) -> None:
+        """ Load mapping of y_test -> prediction
+
+        Args:
+            model_name (str): model name
+
+        Returns:
+            pd.DataFrame: Data DF
+        """
+        file_name = f'{model_name}_ytest_prediction_comparison.csv'
+        logging.info(f'Load error calculation to: {file_name}')
+
+        df = pd.read_csv( Path(self.config.files_dir / f'{file_name}') )
+
+        return df
