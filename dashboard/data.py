@@ -18,6 +18,8 @@ def app(config):
 
     ###
     st.subheader('Original data')
+    st.write(f'Samples: {df_data.shape[0]}')
+    st.write(f'Columns: {df_data.columns.to_list()}')
     st.dataframe(df_data)
 
     st.write('Data description')
@@ -26,7 +28,7 @@ def app(config):
     st.write('Pairplot')
     st.image( Image.open( Path(config.fig_dir / 'feature_pairplot.png') ) )
 
-    st.write('Heatmap')
+    st.write('Correlation heatmap')
     st.image( Image.open( Path(config.fig_dir / 'feature_heatmap.png') ) )
 
     ###
@@ -42,13 +44,15 @@ def app(config):
     st.dataframe(df_diff)
 
     ###
-    st.write(f'Target variable:')
+    st.write(f'Target variable: {config.col_target}')
     df_target = df_data[config.col_target].value_counts()
     df_target = pd.concat([df_data[config.col_target].value_counts(),
                 df_data[config.col_target].value_counts(normalize=True).mul(100)],axis=1, keys=('counts','percentage'))
     st.dataframe( df_target )
 
     st.subheader('Used data')
+    st.write(f'Samples: {df_data.shape[0]}')
+    st.write(f'Columns: {df_data.columns.to_list()}')
     st.dataframe(df_data)
 
 
