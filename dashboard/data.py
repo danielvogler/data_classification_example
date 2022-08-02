@@ -15,7 +15,6 @@ def app(config):
 
     sideb = st.sidebar
     df_data = utils.load_data_file()
-    df_data, df_diff = utils.data_preprocessing(df_data)
 
     ###
     st.subheader('Original data')
@@ -32,6 +31,8 @@ def app(config):
 
     ###
     st.subheader('Removed data')
+    df_data, df_diff = utils.data_preprocessing(df_data)
+
     cols_to_drop = config.col_drop
     ###
     st.write(f'Dropped columns: {len(config.col_drop)}')
@@ -46,6 +47,9 @@ def app(config):
     df_target = pd.concat([df_data[config.col_target].value_counts(),
                 df_data[config.col_target].value_counts(normalize=True).mul(100)],axis=1, keys=('counts','percentage'))
     st.dataframe( df_target )
+
+    st.subheader('Used data')
+    st.dataframe(df_data)
 
 
 
