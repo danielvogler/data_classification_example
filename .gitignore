@@ -11,7 +11,7 @@ __pycache__/
 *.code-workspace
 *.pkl
 *.csv
-data/figures/*
+data/*/figures/*
 
 # Distribution / packaging
 .Python
