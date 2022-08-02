@@ -11,6 +11,7 @@ from sklearn.model_selection import cross_val_score
 from sklearn import svm
 import numpy as np
 from pathlib import Path
+import csv
 
 class Analytics:
 
@@ -35,6 +36,10 @@ class Analytics:
         """
         logging.info(f'Modeling: {all_model_names}')
 
+        with open( Path(self.config.files_dir / 'feature_column_names.csv'),'w') as f:
+            wr = csv.writer(f)
+            wr.writerow(df_data.drop(columns=self.config.col_target).columns.to_list())
+
         df_model_summary = pd.DataFrame(columns=['model_name','MAE','MAPE','r2','accuracy_score','cv_score'], index=all_model_names)
         df_model_summary.set_index('model_name', inplace = True)
         df_model_summary = df_model_summary.dropna()
@@ -50,6 +55,7 @@ class Analytics:
 
             df_model_summary.loc[m] = pd.Series({'MAE':MAE, 'MAPE':MAPE, 'r2':r2, 'accuracy_score':accuracy_score, 'cv_score':cv_score})
 
+        df_fi_summary = Utils(self.config).merge_feature_importance_files(all_model_names)
         df_cost_summary = self.all_cost_analyses(all_model_names)
         Plotting(self.config).all_categorization_error_hist( self.config.all_model_names)
 

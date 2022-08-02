@@ -12,7 +12,7 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import mean_absolute_percentage_error
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import StandardScaler
-
+import csv
 
 class Utils:
 
@@ -213,6 +213,41 @@ class Utils:
         return MAE, MAPE, r2, acc_score
 
 
+    def merge_feature_importance_files(
+        self,
+        model_names
+        ) -> None:
+        """ Merge feature importance
+
+        Args:
+            model (_type_): model
+            model_name (_type_): model name to use for storing
+            X_train (_type_): X_train for col names
+        """
+        with open( Path(self.config.files_dir / 'feature_column_names.csv'),'r') as f:
+            reader = csv.reader(f, delimiter=',')
+            feature_columns = []
+            for row in reader:
+                for item in row:
+                    feature_columns.append(item)
+
+        df_fi_summary = pd.DataFrame(columns=feature_columns)
+
+        for m in model_names:
+            if m in ['DT','RF','AdaBoost']:
+                file_name = f'{m}_feature_importance.csv'
+                logging.info(f'Load feature importance file for {m}: {file_name}')
+                df_feature_importance = pd.read_csv( Path(self.config.files_dir, file_name) )
+                df_fi_summary.loc[m] = df_feature_importance.iloc[0].to_list()[1:]
+
+            else:
+                pass
+
+        df_fi_summary.to_csv( Path(self.config.files_dir / 'df_feature_importance_summary.csv') )
+
+        return df_fi_summary
+
+
     def save_feature_importance(
         self,
         model,
@@ -239,7 +274,6 @@ class Utils:
             pass
 
         return
-
 
 
     def save_prediction_and_target_values(
