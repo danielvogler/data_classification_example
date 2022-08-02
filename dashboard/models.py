@@ -11,8 +11,14 @@ def app(config):
     sideb = st.sidebar
 
     st.subheader('Model performance')
+    st.write(f'Test split: {config.test_size}')
+
     df_model_summary = pd.read_csv( Path( config.files_dir / 'df_model_summary.csv' ), index_col=0 )
     st.dataframe(df_model_summary.sort_values(by=['accuracy_score'], ascending=False))
+
+    st.write('Feature importance')
+    df_fi_summary = pd.read_csv( Path( config.files_dir / 'df_feature_importance_summary.csv' ), index_col=0 )
+    st.dataframe(df_fi_summary)
 
     st.write('Correct predictions')
     st.image( Image.open( Path(config.fig_dir / 'all_predictions_correct_error_hist.png') ) )
@@ -20,6 +26,3 @@ def app(config):
     st.write('Incorrect predictions')
     st.image( Image.open(Path(config.fig_dir / 'all_predictions_incorrect_error_hist.png') ) )
 
-    st.write('Feature importance')
-    df_fi_summary = pd.read_csv( Path( config.files_dir / 'df_feature_importance_summary.csv' ), index_col=0 )
-    st.dataframe(df_fi_summary)
